@@ -61,4 +61,22 @@ describe('FacebookIntegrator', () => {
       expect(accounts).toEqual(expect.arrayContaining([account1, account2]));
     });
   });
+
+  describe('getFacebookPageInfo', () => {
+    it('should return page info for valid access token', async () => {
+      const validToken = 'fb_token_123';
+      const pageInfo = await facebookIntegrator.getFacebookPageInfo(validToken);
+
+      expect(pageInfo).toHaveProperty('account_name');
+      expect(pageInfo).toHaveProperty('page_id');
+      expect(pageInfo.account_name).toBe('Test Facebook Page');
+      expect(pageInfo.page_id).toMatch(/^fb_page_/);
+    });
+
+    it('should throw error for invalid access token', async () => {
+      const invalidToken = 'invalid_token';
+      await expect(facebookIntegrator.getFacebookPageInfo(invalidToken))
+        .rejects.toThrow('Invalid access token');
+    });
+  });
 })

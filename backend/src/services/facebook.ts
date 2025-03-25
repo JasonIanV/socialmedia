@@ -1,10 +1,16 @@
 // Simulated Facebook integration service
 
+interface FacebookPageInfo {
+  account_name: string;
+  page_id: string;
+}
+
 interface FacebookAccount {
   id: string;
   name: string;
   accessToken: string;
   platform: 'facebook';
+  pageInfo?: FacebookPageInfo;
 }
 
 // Simulated in-memory storage
@@ -33,11 +39,13 @@ class FacebookIntegrator {
 
     // Simulate Facebook API response
     const mockAccessToken = `fb_token_${Date.now()}`;
+    const pageInfo = await this.getFacebookPageInfo(mockAccessToken);
     const account: FacebookAccount = {
-      id: `fb_${Date.now()}`,
-      name: 'Test Facebook Page',
+      id: pageInfo.page_id,
+      name: pageInfo.account_name,
       accessToken: encryptToken(mockAccessToken),
-      platform: 'facebook'
+      platform: 'facebook',
+      pageInfo
     };
 
     // Store account data
@@ -55,6 +63,22 @@ class FacebookIntegrator {
   // Get all stored accounts
   getAllAccounts(): FacebookAccount[] {
     return Array.from(accounts.values());
+  }
+
+  // Get Facebook page information using access token
+  async getFacebookPageInfo(accessToken: string): Promise<FacebookPageInfo> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (!accessToken.startsWith('fb_token_')) {
+      throw new Error('Invalid access token');
+    }
+
+    // Simulate Facebook API response
+    return {
+      account_name: 'Test Facebook Page',
+      page_id: `fb_page_${Date.now()}`
+    };
   }
 }
 
